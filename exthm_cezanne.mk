@@ -20,6 +20,9 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # Inherit some common ExThmUI stuff.
 $(call inherit-product, vendor/exthm/config/common.mk)
 
+# Inherit from cezanne device
+$(call inherit-product, device/xiaomi/cezanne/device.mk)
+
 # Device identifier. This must come after all inclusions.
 PRODUCT_NAME := exthm_cezanne
 PRODUCT_DEVICE := cezanne
