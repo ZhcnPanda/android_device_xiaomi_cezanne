@@ -44,7 +44,14 @@ PRODUCT_PACKAGES += \
     libreverbwrapper \
     libvisualizer \
     libtinycompress \
-	
+
+# Bluetooth
+PRODUCT_PACKAGES += \
+    btremoted \
+    libldacBT_dec \
+    libbt-vendor \
+    libbluetooth_mtk
+
 # Boot animation
 TARGET_BOOT_ANIMATION_RES := 1080
 
