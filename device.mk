@@ -66,14 +66,6 @@ PRODUCT_PACKAGES += \
     android.hardware.memtrack@1.0-service \
     libvulkan
 	
-# Gboard
-PRODUCT_PACKAGES += \
-    Gboard
-
-# Trebuchet
-PRODUCT_PACKAGES += \
-    Trebuchet
-    
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)
