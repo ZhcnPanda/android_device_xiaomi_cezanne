@@ -73,6 +73,10 @@ PRODUCT_SOONG_NAMESPACES += \
 # Shipping API level
 PRODUCT_SHIPPING_API_LEVEL := 29
 
+# Overlay
+PRODUCT_PACKAGES := \
+    FrameworkResOverlay
+
 # Partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_BUILD_SUPER_PARTITION := false
