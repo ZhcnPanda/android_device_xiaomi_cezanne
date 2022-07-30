@@ -47,7 +47,7 @@ PRODUCT_PACKAGES += \
     libldnhncr \
     libreverbwrapper \
     libvisualizer \
-    libtinycompress \
+    libtinycompress
 
 # Bluetooth
 PRODUCT_PACKAGES += \
@@ -80,6 +80,24 @@ PRODUCT_SHIPPING_API_LEVEL := 29
 # Overlay
 PRODUCT_PACKAGES := \
     FrameworkResOverlay
+
+# MotorCamera
+PRODUCT_PACKAGES += \
+    XiaomiParts
+    
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/motor/popup_cangmen_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_cangmen_down.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_cangmen_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_cangmen_up.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_chilun_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_chilun_down.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_chilun_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_chilun_up.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_jijia_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_jijia_down.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_jijia_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_jijia_up.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_mofa_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_mofa_down.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_mofa_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_mofa_up.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_muqin_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_muqin_down.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_muqin_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_muqin_up.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_yingyan_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_yingyan_down.ogg \
+    $(LOCAL_PATH)/configs/motor/popup_yingyan_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_yingyan_up.ogg
 
 # Partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
