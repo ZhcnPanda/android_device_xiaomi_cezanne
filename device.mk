@@ -19,9 +19,13 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 # Setup dalvik vm configs
 $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
+# Soong namespaces
+PRODUCT_SOONG_NAMESPACES += \
+    $(LOCAL_PATH)
+    
 # APNs
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/apn/apns-conf.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/apns-conf.xml
+    $(LOCAL_PATH)/configs/apn/apns-conf.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/apns-conf.xml
 
 # Audio
 PRODUCT_PACKAGES += \
@@ -72,18 +76,20 @@ PRODUCT_PACKAGES += \
 
 # Fingerprint
 PRODUCT_PACKAGES += \
-    lineage.biometrics.fingerprint.inscreen@1.0-service.cezanne 
+    lineage.biometrics.fingerprint.inscreen@1.0-service.cezanne
 
-# Soong namespaces
-PRODUCT_SOONG_NAMESPACES += \
-    $(LOCAL_PATH)
+# IFAA
+PRODUCT_PACKAGES += \
+    org.ifaa.android.manager
 
 # Shipping API level
 PRODUCT_SHIPPING_API_LEVEL := 29
 
 # Overlay
 PRODUCT_PACKAGES := \
-    FrameworkResOverlay
+    FrameworkResOverlay \
+    SystemUIOverlay \
+    SettingsOverlay
 
 # MotorCamera
 PRODUCT_PACKAGES += \
