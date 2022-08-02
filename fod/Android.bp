@@ -16,6 +16,7 @@
 cc_binary {
     relative_install_path: "hw",
     defaults: ["hidl_defaults"],
+    vintf_fragments: ["lineage.biometrics.fingerprint.inscreen@1.0-service.xiaomi_cezanne.xml"],
     name: "lineage.biometrics.fingerprint.inscreen@1.0-service.cezanne",
     init_rc: ["lineage.biometrics.fingerprint.inscreen@1.0-service.cezanne.rc"],
     srcs: [

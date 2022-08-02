@@ -17,11 +17,16 @@
 #define LOG_TAG "FingerprintInscreenService"
 
 #include "FingerprintInscreen.h"
+#include <unistd.h>
 
 #include <android-base/logging.h>
 #include <hardware_legacy/power.h>
 #include <cmath>
 #include <fstream>
+#include <thread>
+
+
+#define FINGERPRINT_ACQUIRED_VENDOR 6
 
 #define COMMAND_NIT 10
 #define PARAM_NIT_FOD 1
@@ -33,9 +38,9 @@
 
 #define TOUCH_FOD_ENABLE 10
 
-#define FOD_SENSOR_X 439
-#define FOD_SENSOR_Y 1732
-#define FOD_SENSOR_SIZE 202
+#define FOD_SENSOR_X 445
+#define FOD_SENSOR_Y 2025
+#define FOD_SENSOR_SIZE 189
 
 #define BRIGHTNESS_PATH "/sys/class/leds/lcd-backlight/brightness"
 
@@ -62,10 +67,18 @@ static void set(const std::string& path, const T& value) {
     file << value;
 }
 
+static void threadboost(sp<IXiaomiFingerprint> txiaomiFingerprintService,char *pflag){
+    LOG(ERROR) << "Thread start";
+    usleep(250000);
+    set(DISPPARAM_PATH, *pflag ? DISPPARAM_HBM_FOD_ON:DISPPARAM_HBM_FOD_OFF);
+    txiaomiFingerprintService->extCmd(COMMAND_NIT, PARAM_NIT_FOD);
+}
+
 FingerprintInscreen::FingerprintInscreen() {
     xiaomiDisplayFeatureService = IDisplayFeature::getService();
     touchFeatureService = ITouchFeature::getService();
     xiaomiFingerprintService = IXiaomiFingerprint::getService();
+    //sd = 400000;
 }
 
 Return<int32_t> FingerprintInscreen::getPositionX() {
@@ -76,18 +89,17 @@ Return<int32_t> FingerprintInscreen::getPositionY() {
     return FOD_SENSOR_Y;
 }
 
-Return<int32_t> FingerprintInscreen::getDimAmount(int32_t /* brightness */) {
+Return<int32_t> FingerprintInscreen::getDimAmount(int32_t brightness ) {
     float alpha;
-    int realBrightness = get(BRIGHTNESS_PATH, 0);
-    
-    if (realBrightness >= 500) {
-        alpha = 1.0 - pow(realBrightness / 2047.0 * 430.0 / 600.0, 0.485);
-    } else if (realBrightness < 500 && realBrightness >=250) {
-        alpha = 1.0 - pow(realBrightness / 2047.0 * 430.0 / 600.0, 0.530);
-    } else if (realBrightness > 60) {
-         alpha = 1.0 - pow(realBrightness / 1680.0, 0.525);
+//    LOG(ERROR) << "getDimAmount()";
+    if (brightness >= 62) {
+        alpha = 1.0 - pow(brightness / 255.0 * 430.0 / 600.0, 0.485);
+    } else if (brightness < 62 && brightness >=31) {
+        alpha = 1.0 - pow(brightness / 255.0 * 430.0 / 600.0, 0.530);
+    } else if (brightness > 7) {
+         alpha = 1.0 - pow(brightness / 209.0, 0.525);
     }else{
-        alpha = 1.0 - pow(realBrightness / 1680.0, 0.475);
+        alpha = 1.0 - pow(brightness / 209.0, 0.475);
     }
     return 255 * alpha;
 }
@@ -105,21 +117,24 @@ Return<void> FingerprintInscreen::onFinishEnroll() {
 }
 
 Return<void> FingerprintInscreen::onPress() {
+//    LOG(ERROR) << "OnPress()";
     acquire_wake_lock(PARTIAL_WAKE_LOCK, LOG_TAG);
-    set(DISPPARAM_PATH, DISPPARAM_HBM_FOD_ON);
-    xiaomiFingerprintService->extCmd(COMMAND_NIT, PARAM_NIT_FOD);
+    std::thread(threadboost,xiaomiFingerprintService,&flag).detach();
+    flag=1;
     return Void();
 }
 
 Return<void> FingerprintInscreen::onRelease() {
-    set(DISPPARAM_PATH, DISPPARAM_HBM_FOD_OFF);
     xiaomiFingerprintService->extCmd(COMMAND_NIT, PARAM_NIT_NONE);
+    set(DISPPARAM_PATH, DISPPARAM_HBM_FOD_OFF);
+    flag=0;
     release_wake_lock(LOG_TAG);
     return Void();
 }
 
 Return<void> FingerprintInscreen::onShowFODView() {
     xiaomiDisplayFeatureService->setFeature(0, 17, 1, 1);
+    //xiaomiDisplayFeatureService->setFeature(0, 22, 1, 10);
     touchFeatureService->setTouchMode(TOUCH_FOD_ENABLE, 2);
     return Void();
 }
@@ -127,12 +142,36 @@ Return<void> FingerprintInscreen::onShowFODView() {
 Return<void> FingerprintInscreen::onHideFODView() {
     set(DISPPARAM_PATH, DISPPARAM_HBM_FOD_OFF);
     touchFeatureService->resetTouchMode(TOUCH_FOD_ENABLE);
+    //xiaomiDisplayFeatureService->setFeature(0, 22, 0, 10);
     xiaomiDisplayFeatureService->setFeature(0, 17, 0, 1);
+    flag=0;
     return Void();
 }
 
 Return<bool> FingerprintInscreen::handleAcquired(int32_t acquiredInfo, int32_t vendorCode) {
     LOG(ERROR) << "acquiredInfo: " << acquiredInfo << ", vendorCode: " << vendorCode;
+    std::lock_guard<std::mutex> _lock(mCallbackLock);
+    if (mCallback == nullptr) {
+        return false;
+    }
+
+    if (acquiredInfo == FINGERPRINT_ACQUIRED_VENDOR) {
+        if (vendorCode == 22) {
+            Return<void> ret = mCallback->onFingerDown();
+            if (!ret.isOk()) {
+                LOG(ERROR) << "FingerDown() error: " << ret.description();
+            }
+            return true;
+        }
+
+        if (vendorCode == 23) {
+            Return<void> ret = mCallback->onFingerUp();
+            if (!ret.isOk()) {
+                LOG(ERROR) << "FingerUp() error: " << ret.description();
+            }
+            return true;
+        }
+    }
     return false;
 }
 
@@ -150,7 +189,11 @@ Return<bool> FingerprintInscreen::shouldBoostBrightness() {
 }
 
 
-Return<void> FingerprintInscreen::setCallback(const sp<IFingerprintInscreenCallback>& /* callback */) {
+Return<void> FingerprintInscreen::setCallback(const sp<IFingerprintInscreenCallback>& callback) {
+    {
+        std::lock_guard<std::mutex> _lock(mCallbackLock);
+        mCallback = callback;
+    }
     return Void();
 }
 

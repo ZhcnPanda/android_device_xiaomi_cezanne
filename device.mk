@@ -23,9 +23,21 @@ $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)
 
-# APNs
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/apn/apns-conf.xml:$(TARGET_COPY_OUT_SYSTEM)/etc/apns-conf.xml
+# Boot animation
+TARGET_BOOT_ANIMATION_RES := 1080
+
+# Shipping API level
+PRODUCT_SHIPPING_API_LEVEL := 29
+
+# Partitions
+PRODUCT_USE_DYNAMIC_PARTITIONS := true
+PRODUCT_BUILD_SUPER_PARTITION := false
+
+# Overlay
+PRODUCT_PACKAGES := \
+    FrameworkResOverlay \
+    SystemUIOverlay \
+    SettingsOverlay
 
 # Audio
 PRODUCT_PACKAGES += \
@@ -60,9 +72,6 @@ PRODUCT_PACKAGES += \
     libbt-vendor \
     libbluetooth_mtk
 
-# Boot animation
-TARGET_BOOT_ANIMATION_RES := 1080
-
 # Display
 PRODUCT_PACKAGES += \
     android.hardware.graphics.allocator@2.0-impl \
@@ -74,27 +83,40 @@ PRODUCT_PACKAGES += \
     android.hardware.memtrack@1.0-service \
     libvulkan
 
+# Fastbootd
+PRODUCT_PACKAGES += \
+    fastbootd
+
 # Fingerprint
 PRODUCT_PACKAGES += \
-    lineage.biometrics.fingerprint.inscreen@1.0-service.cezanne
+    lineage.biometrics.fingerprint.inscreen@1.0-service.cezanne 
 
 # IFAA
 PRODUCT_PACKAGES += \
     org.ifaa.android.manager
 
-# Shipping API level
-PRODUCT_SHIPPING_API_LEVEL := 29
+# Fstab
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/fstab.mt6885:$(TARGET_COPY_OUT_RAMDISK)/fstab.mt6885
 
-# Overlay
-PRODUCT_PACKAGES := \
-    FrameworkResOverlay \
-    SystemUIOverlay \
-    SettingsOverlay
+# HIDL
+PRODUCT_PACKAGES += \
+    android.hidl.base@1.0 \
+    android.hidl.manager@1.0 \
+    libhidltransport \
+    libhwbinder
+    
+# Ramdisk
+PRODUCT_PACKAGES += \
+    init.mt6885.rc \
+    init.mt6885.usb.rc \
+    fstab.mt6885 \
+    ueventd.mt6885.rc
 
-# MotorCamera
+# Motor
 PRODUCT_PACKAGES += \
     XiaomiParts
-    
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/motor/popup_cangmen_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_cangmen_down.ogg \
     $(LOCAL_PATH)/configs/motor/popup_cangmen_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_cangmen_up.ogg \
@@ -108,29 +130,3 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/motor/popup_muqin_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_muqin_up.ogg \
     $(LOCAL_PATH)/configs/motor/popup_yingyan_down.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_yingyan_down.ogg \
     $(LOCAL_PATH)/configs/motor/popup_yingyan_up.ogg:$(TARGET_COPY_OUT_SYSTEM)/media/audio/ui/popup_yingyan_up.ogg
-
-# Partitions
-PRODUCT_USE_DYNAMIC_PARTITIONS := true
-PRODUCT_BUILD_SUPER_PARTITION := false
-
-# Fastbootd
-PRODUCT_PACKAGES += \
-    fastbootd
-
-# Fstab
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/etc/fstab.mt6885:$(TARGET_COPY_OUT_RAMDISK)/fstab.mt6885
-
-# HIDL
-PRODUCT_PACKAGES += \
-    android.hidl.base@1.0 \
-    android.hidl.manager@1.0 \
-    libhidltransport \
-    libhwbinder
-
-# Ramdisk
-PRODUCT_PACKAGES += \
-    init.mt6885.rc \
-    init.mt6885.usb.rc \
-    fstab.mt6885 \
-    ueventd.mt6885.rc 
