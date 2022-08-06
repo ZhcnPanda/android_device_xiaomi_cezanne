@@ -12,8 +12,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_p.mk)
 # Inherit from cezanne device makefile
 $(call inherit-product, device/xiaomi/cezanne/device.mk)
 
-# Inherit some common Kaleidoscope stuff.
-$(call inherit-product, vendor/kscope/config/mobile.mk)
+# Inherit common Kaleidoscope configurations
+$(call inherit-product, vendor/kscope/target/product/mobile.mk)
 
 # Device identifier. This must come after all inclusions.
 PRODUCT_NAME := kscope_cezanne
