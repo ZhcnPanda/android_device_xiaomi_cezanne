@@ -1,5 +1,3 @@
-
-@@ -0,0 +1,11 @@
 #
 # Copyright (C) 2022 The Kaleidoscope Project
 #
