@@ -30,5 +30,5 @@ PRODUCT_BUILD_SUPER_PARTITION := false
 
 # Init
 PRODUCT_PACKAGES += \
-	init.mt6885.rc \
+	init.mt6889.rc \
 	fstab.mt6889
